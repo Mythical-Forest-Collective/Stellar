@@ -7,11 +7,31 @@ import ./misc
 import ./exceptions
 
 type TokenType* = enum
-  # Operators
+  # Arithmatic Operators
   Plus     # Addition
   Times    # Multiplication
   Subtract # Subtraction
   Divide   # Division
+  Modulo   # Modulus
+  Exponent # Exponents
+
+  # Relational Operators
+  Assign       # Assignment
+  Equality     # Equality
+  Inequality   # Inequality
+  GreaterThan  # Greater Than
+  LesserThan   # Lesser Than
+  GreaterEqual # Greater Than or Equal To
+  LesserEqual  # Lesser Than or Equal To
+
+  # Logical Operators
+  And # And
+  Or  # Or
+  Not # Not
+
+  # Misc Operators
+  Concat # ..
+  Hash # `#`, also rename `Hash` to something better
 
   # Types
   String  # Strings like `"Hello World!"`
@@ -25,6 +45,7 @@ type TokenType* = enum
   RParen     # Close paren `)`
   Comma      # Comma for splitting arguments
   Identifier # Identifiers include names such as `print` or `var1`
+  EndOfFile  # EOF
 
 
 type Token* = object
@@ -72,6 +93,12 @@ proc lex(code: string, curPos: var int): seq[Token] =
       increment()
     elif lookahead == '/':
       result.add newToken(Divide, lookahead, startPos)
+      increment()
+    elif lookahead == '%':
+      result.add newToken(Modulo, lookahead, startPos)
+      increment()
+    elif lookahead == '^':
+      result.add newToken(Exponent, lookahead, startPos)
       increment()
 
     # Misc
@@ -179,3 +206,4 @@ proc lexStellar*(code: string): seq[Token] =
   var curPos = 0
 
   result = code.lex(curPos)
+  result.add newToken(EndOfFile, "<EOF>", curPos)
